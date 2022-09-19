@@ -1,7 +1,11 @@
 //#include <vgl.h>
 //
 //void display()
-//{
+//{	
+//	//GL_POINTS : 점을 1개씩 표시
+//	//GL_LINES : 점을 2개씩 표시
+//	//GL_TRIANGLES : 점을 3개씩 표시
+//
 //	glClear(GL_COLOR_BUFFER_BIT);
 //	glBegin(GL_POINTS);
 //	for (int i = 0; i < 5000; i++)
