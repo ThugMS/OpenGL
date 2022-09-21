@@ -24,5 +24,16 @@
     <ClCompile Include="ManyPointsGPU.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="0921_수요일.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fShader.glsl">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="vShader.glsl">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>
