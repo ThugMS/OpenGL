@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="0921_수요일.cpp" />
+    <ClCompile Include="0928_ 수요일.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="HelloGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -164,6 +165,7 @@
     <None Include="fShader_Cube.glsl" />
     <None Include="vShader.glsl" />
     <None Include="vShader_Cube.glsl" />
+    <None Include="vShader_CubeRotation.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
