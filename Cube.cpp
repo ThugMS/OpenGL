@@ -1,12 +1,11 @@
-//#include <stdio.h>
 //#include <vgl.h>
-//#include <InitShader.h>
+//#include <initshader.h>
 //#include <vec.h>
 //
-//const int NUM_POINTS = 36;
+//const int num_points = 36;
 //
-//vec4 points[NUM_POINTS];
-//vec4 colors[NUM_POINTS];
+//vec4 points[num_points];
+//vec4 colors[num_points];
 //
 //vec4 vertex_pos[8] = {
 //	vec4(-0.5, -0.5, 0.5, 1.0),
@@ -31,7 +30,7 @@
 //	vec4(0,0,0,1)
 //};
 //
-//void setRectangle(int a, int b, int c, int d) {
+//void setrectangle(int a, int b, int c, int d) {
 //
 //	static int index = 0;
 //
@@ -45,65 +44,64 @@
 //}
 //
 //void init() {
-//	// 1. Create Data in CPU
+//	// 1. create data in cpu
 //
 //	//반시계 방향으로 하는게 국룰이다.
-//	setRectangle(0, 3, 2, 1);
-//	setRectangle(4, 5, 6, 7);
-//	setRectangle(0, 4, 7, 3);
-//	setRectangle(3, 7, 6, 2);
-//	setRectangle(2, 6, 5, 1);
-//	setRectangle(0, 1, 5, 4);
+//	setrectangle(0, 3, 2, 1);
+//	setrectangle(4, 5, 6, 7);
+//	setrectangle(0, 4, 7, 3);
+//	setrectangle(3, 7, 6, 2);
+//	setrectangle(2, 6, 5, 1);
+//	setrectangle(0, 1, 5, 4);
 //
-//	// 2. Sending the Data to GPU
-//	// 2-1. Create Vertex Array Object
-//	GLuint vao;
-//	glGenVertexArrays(1, &vao);
-//	glBindVertexArray(vao);
+//	// 2. sending the data to gpu
+//	// 2-1. create vertex array object
+//	gluint vao;
+//	glgenvertexarrays(1, &vao);
+//	glbindvertexarray(vao);
 //
-//	// 2-2. Create Vertex Buffer Object
-//	GLuint vbo;
-//	glGenBuffers(1, &vbo);
-//	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+//	// 2-2. create vertex buffer object
+//	gluint vbo;
+//	glgenbuffers(1, &vbo);
+//	glbindbuffer(gl_array_buffer, vbo);
 //
-//	// 2-3. Sending the Data to the Buffer
-//	glBufferData(GL_ARRAY_BUFFER, sizeof(points) + sizeof(colors), NULL, GL_STATIC_DRAW); //NULL 인 이유는 아직 데이터의 공간만큼만 확보하고 데이터를 넘기지는 않음
-//	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points); // 이제부터 확보해놓은 공간에 데이터를 넘기는 것
-//	glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
+//	// 2-3. sending the data to the buffer
+//	glbufferdata(gl_array_buffer, sizeof(points) + sizeof(colors), null, gl_static_draw); //null 인 이유는 아직 데이터의 공간만큼만 확보하고 데이터를 넘기지는 않음
+//	glbuffersubdata(gl_array_buffer, 0, sizeof(points), points); // 이제부터 확보해놓은 공간에 데이터를 넘기는 것
+//	glbuffersubdata(gl_array_buffer, sizeof(points), sizeof(colors), colors);
 //
-//	// 3. Loading the Shaders
-//	GLuint prog = InitShader("vShader_Cube.glsl", "fShader_Cube.glsl");
-//	glUseProgram(prog);
+//	// 3. loading the shaders
+//	gluint prog = initshader("vshader_cube.glsl", "fshader_cube.glsl");
+//	gluseprogram(prog);
 //
-//	// 4. Connect the Data with the Shaders
-//	GLuint vPosition = glGetAttribLocation(prog, "vPosition");
-//	glDisableVertexAttribArray(vPosition);
-//	glVertexAttribPointer(vPosition, 4, GL_FLOAT, FALSE, 0, BUFFER_OFFSET(0));
+//	// 4. connect the data with the shaders
+//	gluint vposition = glgetattriblocation(prog, "vposition");
+//	gldisablevertexattribarray(vposition);
+//	glvertexattribpointer(vposition, 4, gl_float, false, 0, buffer_offset(0));
 //
-//	GLuint vColor = glGetAttribLocation(prog, "vColor");
-//	glDisableVertexAttribArray(vColor);
-//	glVertexAttribPointer(vColor, 4, GL_FLOAT, FALSE, 0, BUFFER_OFFSET(sizeof(points)));
+//	gluint vcolor = glgetattriblocation(prog, "vcolor");
+//	gldisablevertexattribarray(vcolor);
+//	glvertexattribpointer(vcolor, 4, gl_float, false, 0, buffer_offset(sizeof(points)));
 //}
 //
 //void display() {
-//	glClear(GL_COLOR_BUFFER_BIT);
-//	glDrawArrays(GL_TRIANGLES, 0, NUM_POINTS);
-//	glFlush();
+//	glclear(gl_color_buffer_bit);
+//	gldrawarrays(gl_triangles, 0, num_points);
+//	glflush();
 //}
 //
 //int main(int argc, char** argv)
 //{
-//	glutInit(&argc, argv);
-//	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
-//	glutInitWindowSize(512, 512);
-//	glutCreateWindow("Hello GL");
+//	glutinit(&argc, argv);
+//	glutinitdisplaymode(glut_single | glut_rgba);
+//	glutinitwindowsize(512, 512);
+//	glutcreatewindow("hello gl");
 //
-//	glewExperimental = true;
-//	glewInit();
-//	printf("ddd");
+//	glewexperimental = true;
+//	glewinit();
 //	init();
-//	glutDisplayFunc(display);
-//	glutMainLoop();
+//	glutdisplayfunc(display);
+//	glutmainloop();
 //
 //	return 0;
 //}
