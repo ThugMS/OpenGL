@@ -39,6 +39,9 @@
     <ClCompile Include="1010_VariousGeometry2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="1012_수요일.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="fShader.glsl">
@@ -71,6 +74,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="1010_MyColorCube.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="1012_MySphere.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

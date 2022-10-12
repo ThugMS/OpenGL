@@ -14,15 +14,15 @@ void main()
 
 	fColor = color;
 
-	if(position.z < -0.45 || position.z > 0.45 )
-		fColor = vec4(0,1,0,1);
-
-	if(position.x < -0.45 || position.x > 0.45 )
-	{
-		if(position.y < -0.45 || position.y > 0.45 )
-			fColor = vec4(0,1,0,1);
-		if(position.z < -0.45 || position.z > 0.45 )
-			fColor = vec4(0,1,0,1);
-	}
+	//if(position.z < -0.45 || position.z > 0.45 )
+	//	fColor = vec4(0,1,0,1);
+	//
+	//if(position.x < -0.45 || position.x > 0.45 )
+	//{
+	//	if(position.y < -0.45 || position.y > 0.45 )
+	//		fColor = vec4(0,1,0,1);
+	//	if(position.z < -0.45 || position.z > 0.45 )
+	//		fColor = vec4(0,1,0,1);
+	//}
 
 }

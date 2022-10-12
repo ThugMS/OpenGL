@@ -150,6 +150,7 @@
     <ClCompile Include="0928_ 수요일.cpp" />
     <ClCompile Include="1005_수요일.cpp" />
     <ClCompile Include="1010_VariousGeometry2.cpp" />
+    <ClCompile Include="1012_수요일.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="HelloGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -174,6 +175,7 @@
     <None Include="vShader_CubeRotation.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="1012_MySphere.h" />
     <ClInclude Include="MyColorCube.h" />
     <ClInclude Include="1010_MyCylinder.h" />
     <ClInclude Include="1010_MyColorCube.h" />
