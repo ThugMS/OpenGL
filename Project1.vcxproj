@@ -149,6 +149,7 @@
     <ClCompile Include="0921_수요일.cpp" />
     <ClCompile Include="0928_ 수요일.cpp" />
     <ClCompile Include="1005_수요일.cpp" />
+    <ClCompile Include="1010_VariousGeometry2.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="HelloGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -164,6 +165,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="1010_fShader.glsl" />
+    <None Include="1010_vShader.glsl" />
     <None Include="fShader.glsl" />
     <None Include="fShader_Cube.glsl" />
     <None Include="vShader.glsl" />
@@ -172,6 +175,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyColorCube.h" />
+    <ClInclude Include="1010_MyCylinder.h" />
+    <ClInclude Include="1010_MyColorCube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
