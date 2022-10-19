@@ -1,6 +1,8 @@
+
 //#include <vgl.h>
 //#include <InitShader.h>
 //#include <vec.h>
+
 //
 //const int NUM_POINTS = 36;
 //
