@@ -93,7 +93,8 @@ void display()
 	GLuint uTime = glGetUniformLocation(prog, "uTime");
 	glUniform1f(uTime, 0.1f * gTime);
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	glDrawArrays(GL_TRIANGLES, 0, NUM_POINTS);
 	glFlush();
 }
@@ -106,7 +107,7 @@ void myIdle() {
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(512, 512);
 	glutCreateWindow("Hello GL");
 
