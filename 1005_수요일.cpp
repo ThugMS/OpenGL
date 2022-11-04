@@ -23,7 +23,7 @@ void display()
 
 void myIdle()
 {
-	gTime += 0.001f;
+	gTime += 0.0001f;
 	glutPostRedisplay();
 }
 

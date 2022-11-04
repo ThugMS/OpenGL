@@ -73,7 +73,7 @@ void MyColorCube::init()
 
 
 	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	//glBindVertexArray(vao);
 	// 2-2. create vertex buffer object
 
 	glGenBuffers(1, &vbo);
@@ -82,7 +82,6 @@ void MyColorCube::init()
 		vertices, GL_STATIC_DRAW);
 
 	delete[] vertices;
-
 }
 
 void MyColorCube::setAttributePointers(GLuint prog)

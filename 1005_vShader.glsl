@@ -20,7 +20,7 @@ void main()
 	|a  b|		[0][0]	 [1][0]		// column major
 	|c  d|		[0][1]   [1][1]
 */
-	float angle1 = 30.0f;
+	float angle1 = 90.0;
 	float rad1 = angle1 /180.0f * 3.141592f;
 
 	float angle2 = uTime * 90.0f;
