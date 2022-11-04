@@ -35,6 +35,16 @@
     <ClCompile Include="1005_수요일.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+<<<<<<< HEAD
+=======
+    <ClCompile Include="1010_VariousGeometry2.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="1012_수요일.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+>>>>>>> 9cfc1e65ee6001959fbde0f955c7c4229d33846e
   <ItemGroup>
     <None Include="fShader.glsl">
       <Filter>리소스 파일</Filter>
@@ -51,9 +61,24 @@
     <None Include="vShader_CubeRotation.glsl">
       <Filter>리소스 파일</Filter>
     </None>
+    <None Include="1010_vShader.glsl">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="1010_fShader.glsl">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyColorCube.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="1010_MyCylinder.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="1010_MyColorCube.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="1012_MySphere.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
