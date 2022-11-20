@@ -39,10 +39,17 @@ float cameraSpeed = 0.1;
 
 float g_time = 0;
 
-float turnAngle = 180;
+double turnAngle = 0 + ((2*3.141592653589) / 4) * 3;
 
 bool isLeftTurn = false;
 bool isRightTurn = false;
+bool isNavigate = false;
+
+int cnt = 0;
+int maxCnt = 0;
+int naviArrow = 0;
+
+int turnCnt = 0;
 
 typedef struct node {
 	int h = 0;
@@ -50,11 +57,14 @@ typedef struct node {
 	int g = 0;
 	pair<int, int> parent;
 	pair<int, int> index;
+	pair<int, int> child;
 };
 
 vector<node> closeNode;
 vector<node> openNode;
 vector<node> answerNode;
+
+vector<vec3> navigateArrow;
 
 pair<int, int> goalIndex;
 pair<int, int>startIndex;
@@ -129,7 +139,9 @@ void DrawMaze(bool check)
 {
 	for (int j = 0; j < MazeSize; j++)
 		for (int i = 0; i < MazeSize; i++) {
-			if (maze[i][j] == '*')
+
+
+			if (maze[i][j] == '*') 
 			{
 				vec3 color = vec3(i / (float)MazeSize, j / (float)MazeSize, 1);
 				mat4 ModelMat = Translate(getPositionFromIndex(i, j));
@@ -179,6 +191,26 @@ void DrawGrid()
 	}
 }
 
+void SetTurnAngle(int a) {
+	switch(a) {
+	case 1:
+		turnAngle = 0 + ((2 * 3.141592653589) / 4) * 3;
+		break;
+
+	case 2:
+		turnAngle = 0 + ((2 * 3.141592653589) / 4) * 1;
+		break;
+
+	case 3:
+		turnAngle = 0 + ((2 * 3.141592653589) / 4) * 2;
+		break;
+
+	case 4:
+		turnAngle = 0 + ((2 * 3.141592653589) / 4) * 4;
+		break;
+	}
+}
+
 void DrawRoad() {
 	float w = 1;
 
@@ -187,14 +219,61 @@ void DrawRoad() {
 
 		pair<int, int> parent = answerNode[i].parent;
 		pair<int, int> cur = answerNode[i].index;
+		pair<int, int> child = answerNode[i].child;
 		mat4 m;
+		
+		if (answerNode.size() - 1 == i) {
+			if(cur.first == child.first)
+				m = Translate(pos.x, -0.3, pos.z) * Scale(w, 0.1, 0.1);
+			else
+				m = Translate(pos.x, -0.3, pos.z) * Scale(0.1, 0.1, w);
 
-		if (parent.first != cur.first) {
-			m = Translate(pos.x, -0.3, pos.z) * Scale(0.05, 0.05, w);
+			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
+			glUniform4f(uColor, 1, 0, 0, 1);
+			cube.Draw(program);
+
+			continue;
 		}
-		else if (parent.second != cur.second) {
-			m = Translate(pos.x, -0.3, pos.z) * Scale(w, 0.05, 0.05);
+
+		if ((parent.first == cur.first && parent.second > cur.second && child.second == cur.second && child.first < cur.first) || (child.first == cur.first && child.second > cur.second && parent.second == cur.second && parent.first < cur.first)) { // ┕ 모양
+			m = Translate(pos.x, -0.3, pos.z - 0.25) * Scale(0.1, 0.1, w/2);
+			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
+			glUniform4f(uColor, 1, 0, 0, 1);
+			cube.Draw(program);
+
+			m = Translate(pos.x + 0.25, -0.3, pos.z) * Scale(w/2, 0.1, 0.1);
 		}
+		else if ((parent.first == cur.first && parent.second > cur.second && child.second == cur.second && child.first > cur.first) || (child.first == cur.first && child.second > cur.second && parent.second == cur.second && parent.first > cur.first)) { // ┎ 모양
+			m = Translate(pos.x, -0.3, pos.z + 0.25) * Scale(0.1, 0.1, w / 2);
+			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
+			glUniform4f(uColor, 1, 0, 0, 1);
+			cube.Draw(program);
+
+			m = Translate(pos.x + 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
+		}
+		else if ((parent.first == cur.first && parent.second < cur.second && child.second == cur.second && child.first > cur.first) || (child.first == cur.first && child.second < cur.second && parent.second == cur.second && parent.first > cur.first)) { // ┐ 모양
+			m = Translate(pos.x, -0.3, pos.z + 0.25) * Scale(0.1, 0.1, w / 2);
+			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
+			glUniform4f(uColor, 1, 0, 0, 1);
+			cube.Draw(program);
+
+			m = Translate(pos.x - 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
+		}
+		else if ((parent.first == cur.first && parent.second < cur.second && child.second == cur.second && child.first < cur.first) || (child.first == cur.first && child.second < cur.second && parent.second == cur.second && parent.first < cur.first)) { // ┛ 모양
+			m = Translate(pos.x, -0.3, pos.z - 0.25) * Scale(0.1, 0.1, w / 2);
+			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
+			glUniform4f(uColor, 1, 0, 0, 1);
+			cube.Draw(program);
+
+			m = Translate(pos.x - 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
+		}
+		else if (parent.first != cur.first && parent.second == cur.second) { //세로줄
+			m = Translate(pos.x, -0.3, pos.z) * Scale(0.1, 0.1, w);
+		}
+		else if (parent.second != cur.second && parent.first == parent.first) { //가로줄
+			m = Translate(pos.x, -0.3, pos.z) * Scale(w, 0.1, 0.1);
+		}
+
 		glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
 		glUniform4f(uColor, 1,0, 0, 1);
 		cube.Draw(program);
@@ -368,9 +447,11 @@ void FindOpenNode(pair<int,int> currentIndex) {
 pair<int,int> SetCloseNode() {
 	pair<int, int> closeIndex;
 
+	if (openNode.empty())
+		return closeIndex;
 	node index = openNode[0];
 	int indexNum = 0;
-
+	
 	for (int i = 1; i < openNode.size(); i++) {
 		if (index.f > openNode[i].f) {
 			index = openNode[i];
@@ -393,9 +474,17 @@ void Astar() {
 
 	startIndex = GetIndex();
 	pair<int, int> currentIndex = startIndex;
+	
+	node first;
+
+	first.index = currentIndex;
+	closeNode.push_back(first);
+	
+	int fcnt = 0;
+	int scnt = 0;
 
 	while (1) {
-		FindOpenNode(currentIndex);
+		FindOpenNode(currentIndex); 
 		currentIndex = SetCloseNode();
 
 		if (currentIndex == goalIndex) {
@@ -406,69 +495,196 @@ void Astar() {
 		}
 
 	}
-
+	
 	pair<int, int> parentIndex;
 	parentIndex = closeNode[closeNode.size() - 1].parent;
 	answerNode.push_back(closeNode[closeNode.size() - 1]);
 
-	for (int i = closeNode.size() - 2; i >= 0; i--) {
+	for (int i = closeNode.size() - 1; i >= 0; i--) {
+		
+		if (parentIndex == startIndex) {
+			closeNode[i].child = answerNode[answerNode.size()-1].index; 
+		}
+
 		if (parentIndex == closeNode[i].index) {
 			answerNode.push_back(closeNode[i]);
 			parentIndex = closeNode[i].parent;
 		}
 
-		if (parentIndex == startIndex)
-			break;
+		
 	}
 
-	//for (int i = 0; i < answerNode.size(); i++) {
-	//	//cout << answerNode[i].index.first << " " << answerNode[i].index.second << endl;
-	//}
+	for (int i = 1; i < answerNode.size() - 1; i++) {
+		answerNode[i].child = answerNode[i - 1].index;
+	}
+
+	/*for (int i = 1; i < answerNode.size() - 1; i++) {
+		cout << answerNode[i].index.first << " " << answerNode[i].index.second << endl;
+	}*/
 
 	cout << "Find" << endl;
+}
+
+void Navigate() {
+	if (answerNode.empty())
+		return;
+
+	navigateArrow.clear();
+	isNavigate = true;
+
+	int angle = 0;
+
+	for (int i = answerNode.size() - 1; i > 0; i--) {
+		vec3 start = getPositionFromIndex(answerNode[i].index.second, answerNode[i].index.first);
+		vec3 end = getPositionFromIndex(answerNode[i - 1].index.second, answerNode[i - 1].index.first);
+
+		//cout << start << endl << end << endl;
+
+		vec3 arrow = normalize(end - start);
+		navigateArrow.push_back(arrow);
+	}
+}
+
+int SetNaviArrow(vec3 arrow) {
+	if (arrow.z < 0)
+		return 1;
+
+	if (arrow.z > 0)
+		return 2;
+
+	if (arrow.x < 0)
+		return 3;
+
+	if (arrow.x > 0) {
+		return 4;
+	}
+}
+
+void CheckTurnDirection(int a, int b) {
+	double angle = (2 * 3.141592653589 / 4) * 0.1;
+
+	if (a == 1) {
+		if (b == 3) {
+			turnAngle -=  angle;
+		}
+		else {
+			turnAngle += angle;
+		}
+	}
+
+	else if (a == 2) {
+		if (b == 3) {
+			turnAngle += angle;
+		}
+		else {
+			turnAngle -= angle;
+		}
+	}
+
+	else if (a == 3) {
+		if (b == 1) {
+			turnAngle += angle;
+		}
+		else {
+			turnAngle -= angle;
+		}
+	}
+
+	else if (a == 4) {
+		if (b == 1) {
+			turnAngle -= angle;
+		}
+		else {
+			turnAngle += angle;
+		}
+	}
 }
 
 void idle()
 {
 	g_time += 1;
 
-	if ((GetAsyncKeyState('A') & 0x8000) == 0x8000) {		// if "A" key is pressed	: Go Left
-		isLeftTurn = true;
+	if (isNavigate) {
+		maxCnt = navigateArrow.size() * 10;
 
-		viewDirection.x = cos(turnAngle);
-		viewDirection.z = sin(turnAngle);
+		if (cnt == 0) {
+			cameraPos = getPositionFromIndex(answerNode[answerNode.size() - 1].index.second, answerNode[answerNode.size() - 1].index.first);
+			viewDirection = navigateArrow[0];
+			naviArrow = SetNaviArrow(navigateArrow[0]);
+			SetTurnAngle(SetNaviArrow(navigateArrow[0]));
+		}
+
+		if (naviArrow != SetNaviArrow(navigateArrow[cnt / 10])) {
+			CheckTurnDirection(naviArrow, SetNaviArrow(navigateArrow[cnt / 10]));
+
+			//cout << cnt  << " : " << turnAngle << endl;
+			viewDirection.x = cos(turnAngle);
+			viewDirection.z = sin(turnAngle);
+
+			turnCnt++;
+
+			if (turnCnt > 9) {
+				turnCnt = 0;
+				naviArrow = SetNaviArrow(navigateArrow[cnt / 10]);
+			}
+		}
+
+		else {
+			cameraPos += navigateArrow[cnt / 10] * cameraSpeed;
+			cnt++;
+
+			if (cnt >= maxCnt) {
+				cnt = 0;
+				isNavigate = false;
+				//cout << maxCnt << " end" << endl;
+			}
+		}
 		
-
-		/*cameraPos += cameraSpeed * vec3(-1, 0, 0);
-		if(CheckCollider(cameraPos + cameraSpeed * vec3(-1,0,0) * 2))
-			cameraPos -= cameraSpeed * vec3(-1, 0, 0);*/
 	}
-	if ((GetAsyncKeyState('D') & 0x8000) == 0x8000) {		// if "D" key is pressed	: Go Right
-		isRightTurn = true;
+	else {
+		if ((GetAsyncKeyState('A') & 0x8000) == 0x8000) {		// if "A" key is pressed	: Go Left
+			isLeftTurn = true;
 
-		viewDirection.x = cos(turnAngle);
-		viewDirection.z = sin(turnAngle);
+			viewDirection.x = cos(turnAngle);
+			viewDirection.z = sin(turnAngle);
 
-		/*cameraPos += cameraSpeed * vec3(1, 0, 0);
-		if (CheckCollider(cameraPos + cameraSpeed * vec3(1, 0, 0)))
-			cameraPos -= cameraSpeed * vec3(1, 0, 0);*/
+
+			/*cameraPos += cameraSpeed * vec3(-1, 0, 0);
+			if(CheckCollider(cameraPos + cameraSpeed * vec3(-1,0,0) * 2))
+				cameraPos -= cameraSpeed * vec3(-1, 0, 0);*/
+		}
+		if ((GetAsyncKeyState('D') & 0x8000) == 0x8000) {		// if "D" key is pressed	: Go Right
+			isRightTurn = true;
+
+			viewDirection.x = cos(turnAngle);
+			viewDirection.z = sin(turnAngle);
+
+			/*cameraPos += cameraSpeed * vec3(1, 0, 0);
+			if (CheckCollider(cameraPos + cameraSpeed * vec3(1, 0, 0)))
+				cameraPos -= cameraSpeed * vec3(1, 0, 0);*/
+		}
+		if ((GetAsyncKeyState('W') & 0x8000) == 0x8000) {		// if "W" key is pressed	: Go Forward
+
+			cameraPos += cameraSpeed * viewDirection;
+
+			if (CheckCollider(cameraPos + cameraSpeed * viewDirection))
+				cameraPos -= cameraSpeed * viewDirection;
+		}
+		if ((GetAsyncKeyState('S') & 0x8000) == 0x8000) {		// if "S" key is pressed	: Go Backward
+			cameraPos += cameraSpeed * viewDirection * -1;
+			if (CheckCollider(cameraPos + cameraSpeed * viewDirection * -1))
+				cameraPos -= cameraSpeed * viewDirection * -1;
+		}
 	}
-	if ((GetAsyncKeyState('W') & 0x8000) == 0x8000) {		// if "W" key is pressed	: Go Forward
 		
-		cameraPos += cameraSpeed  * viewDirection;
-
-		if (CheckCollider(cameraPos + cameraSpeed * viewDirection))
-			cameraPos -= cameraSpeed * viewDirection;
+	if ((GetAsyncKeyState(' ') & 0x8000) == 0x8000) {		// if "S" key is pressed	: Go Backward
+		Navigate();
 	}
-	if ((GetAsyncKeyState('S') & 0x8000) == 0x8000) {		// if "S" key is pressed	: Go Backward
-		cameraPos += cameraSpeed * viewDirection * -1;
-		if (CheckCollider(cameraPos + cameraSpeed * viewDirection * -1))
-			cameraPos -= cameraSpeed * viewDirection * -1;
-	}	
-
 	if ((GetAsyncKeyState('Q') & 0x8000) == 0x8000) {		// if "S" key is pressed	: Go Backward
 		Astar();
 	}
+
+	
 
 
 	//cout << cameraPos << endl;
