@@ -223,13 +223,22 @@ void DrawRoad() {
 		mat4 m;
 		
 		if (answerNode.size() - 1 == i) {
-			if(cur.first == child.first)
-				m = Translate(pos.x, -0.3, pos.z) * Scale(w, 0.1, 0.1);
-			else
-				m = Translate(pos.x, -0.3, pos.z) * Scale(0.1, 0.1, w);
+			if (cur.first == child.first && cur.second < child.second) {
+				m = Translate(pos.x + 0.25, -0.3, pos.z) * Scale(w/2, 0.1, 0.1);
+			}
+			else if (cur.first == child.first && cur.second > child.second) {
+				m = Translate(pos.x - 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
+			}
+			else if (cur.second == child.second && cur.first < child.first) {
+				m = Translate(pos.x, -0.3, pos.z + 0.25) * Scale(0.1, 0.1, w/2);
+			}
+			else {
+				m = Translate(pos.x, -0.3, pos.z - 0.25) * Scale(0.1, 0.1, w/2);
+			}
+				
 
 			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
-			glUniform4f(uColor, 1, 0, 0, 1);
+			glUniform4f(uColor, cos(g_time / 4), sin(g_time / 4), cos(g_time / 4), 1);
 			cube.Draw(program);
 
 			continue;
@@ -238,7 +247,7 @@ void DrawRoad() {
 		if ((parent.first == cur.first && parent.second > cur.second && child.second == cur.second && child.first < cur.first) || (child.first == cur.first && child.second > cur.second && parent.second == cur.second && parent.first < cur.first)) { // ┕ 모양
 			m = Translate(pos.x, -0.3, pos.z - 0.25) * Scale(0.1, 0.1, w/2);
 			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
-			glUniform4f(uColor, 1, 0, 0, 1);
+			glUniform4f(uColor, cos(g_time / 4), sin(g_time / 4), cos(g_time / 4), 1);
 			cube.Draw(program);
 
 			m = Translate(pos.x + 0.25, -0.3, pos.z) * Scale(w/2, 0.1, 0.1);
@@ -246,7 +255,7 @@ void DrawRoad() {
 		else if ((parent.first == cur.first && parent.second > cur.second && child.second == cur.second && child.first > cur.first) || (child.first == cur.first && child.second > cur.second && parent.second == cur.second && parent.first > cur.first)) { // ┎ 모양
 			m = Translate(pos.x, -0.3, pos.z + 0.25) * Scale(0.1, 0.1, w / 2);
 			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
-			glUniform4f(uColor, 1, 0, 0, 1);
+			glUniform4f(uColor, cos(g_time / 4), sin(g_time / 4), cos(g_time / 4), 1);
 			cube.Draw(program);
 
 			m = Translate(pos.x + 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
@@ -254,7 +263,7 @@ void DrawRoad() {
 		else if ((parent.first == cur.first && parent.second < cur.second && child.second == cur.second && child.first > cur.first) || (child.first == cur.first && child.second < cur.second && parent.second == cur.second && parent.first > cur.first)) { // ┐ 모양
 			m = Translate(pos.x, -0.3, pos.z + 0.25) * Scale(0.1, 0.1, w / 2);
 			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
-			glUniform4f(uColor, 1, 0, 0, 1);
+			glUniform4f(uColor, cos(g_time / 4), sin(g_time / 4), cos(g_time / 4), 1);
 			cube.Draw(program);
 
 			m = Translate(pos.x - 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
@@ -262,7 +271,7 @@ void DrawRoad() {
 		else if ((parent.first == cur.first && parent.second < cur.second && child.second == cur.second && child.first < cur.first) || (child.first == cur.first && child.second < cur.second && parent.second == cur.second && parent.first < cur.first)) { // ┛ 모양
 			m = Translate(pos.x, -0.3, pos.z - 0.25) * Scale(0.1, 0.1, w / 2);
 			glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
-			glUniform4f(uColor, 1, 0, 0, 1);
+			glUniform4f(uColor, cos(g_time / 4), sin(g_time / 4), cos(g_time / 4), 1);
 			cube.Draw(program);
 
 			m = Translate(pos.x - 0.25, -0.3, pos.z) * Scale(w / 2, 0.1, 0.1);
@@ -275,7 +284,7 @@ void DrawRoad() {
 		}
 
 		glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * m);
-		glUniform4f(uColor, 1,0, 0, 1);
+		glUniform4f(uColor, cos(g_time/4), sin(g_time / 4), cos(g_time / 4), 1);
 		cube.Draw(program);
 	}
 }
@@ -406,7 +415,7 @@ void FindOpenNode(pair<int,int> currentIndex) {
 		if (isCloseNode)
 			continue;
 
-		if (maze[sub.second][sub.first] == ' ' || maze[sub.second][sub.first] == 'G') {
+		if (maze[sub.second][sub.first] == ' ' || maze[sub.second][sub.first] == 'G' || maze[sub.second][sub.first] == 'C') {
 			node child;
 
 			child.parent = currentIndex;
@@ -442,6 +451,10 @@ void FindOpenNode(pair<int,int> currentIndex) {
 			}
 		}
 	}
+
+	//for (int i = 0; i < openNode.size(); i++) {
+	//	cout << openNode[i].index.first << " " << openNode[i].index.second << endl;
+	//}
 }
 
 pair<int,int> SetCloseNode() {
@@ -493,7 +506,7 @@ void Astar() {
 		if ((GetAsyncKeyState('O') & 0x8000) == 0x8000) {		// if "S" key is pressed	: Go Backward
 			break;
 		}
-
+		
 	}
 	
 	pair<int, int> parentIndex;
