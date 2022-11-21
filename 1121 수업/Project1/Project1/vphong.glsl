@@ -3,7 +3,13 @@
 in  vec4 vPosition;
 in  vec4 vColor;
 in  vec3 vNormal;
-out vec4 color;
+
+//out vec4 color;
+
+//phong Shading 을 하기위해서 넘기는것
+out vec3 N3;
+out vec3 L3;
+out vec3 V3;
 
 uniform mat4 uProjMat;
 uniform mat4 uModelMat;
@@ -25,18 +31,19 @@ void main()
 
 	vec4 N = uModelMat*vec4(vNormal,0);
 	vec4 L = lPos - vPos;
-	vec3 N3 = normalize(N.xyz);
-	vec3 L3 = normalize(L.xyz);
+	N3 = normalize(N.xyz);
+	L3 = normalize(L.xyz);
+	V3 = normalize(vec3(0,0,0) - vPos.xyz);
 
-	vec3 R3 = normalize(2*dot(L3, N3)*N3 - L3);
-	vec3 V3 = normalize(vec3(0,0,0) - vPos.xyz);
+	//vec3 R3 = normalize(2*dot(L3, N3)*N3 - L3);
 	
-	float sp = pow(max(dot(R3,V3),0), uShiness);
 	
-	vec4 amb = uAmb * uLCol;
-	vec4 dif = uDif * uLCol * max(dot(N3, L3),0);
-	vec4 spec = uSpec * uLCol * sp;
-	   	      
-	color = amb + dif + spec;
-	//color = vec4(vNormal, 1);
+	// float sp = pow(max(dot(R3,V3),0), uShiness);
+	// 
+	// vec4 amb = uAmb * uLCol;
+	// vec4 dif = uDif * uLCol * max(dot(N3, L3),0);
+	// vec4 spec = uSpec * uLCol * sp;
+	//    	      
+	// color = amb + dif + spec;
+	// //color = vec4(vNormal, 1);
 }

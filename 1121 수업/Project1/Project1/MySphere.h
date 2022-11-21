@@ -21,6 +21,7 @@ public:
 	MySphereVertex * Vertices;
 	GLuint Init(int la_slice, int lo_slice, vec4 color=vec4(0.5,0.5,0.5,1));
 	void SetPositionAndOtherAttributes(GLuint program);
+	vec3 computeNormal(vec4 p0, vec4 p1, vec4 p2);
 
 	GLuint vao;
 	GLuint buffer;
@@ -42,6 +43,18 @@ MySphere::~MySphere(void)
 {
 	if(Vertices != NULL) 
 		delete [] Vertices;
+}
+
+
+vec3 MySphere::computeNormal(vec4 p0, vec4 p1, vec4 p2) {
+	vec4 a4 = p1 - p0;
+	vec4 b4 = p2 - p0;
+
+	vec3 a = vec3(a4.x, a4.y, a4.z);
+	vec3 b = vec3(b4.x, b4.y, b4.z);
+
+	vec3 n = normalize((cross(a, b)));
+	return n;
 }
 
 GLuint MySphere::Init(int la_slice, int lo_slice, vec4 color)

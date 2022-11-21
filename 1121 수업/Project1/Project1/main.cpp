@@ -50,6 +50,7 @@ mat4 myLookAt(vec3 eye, vec3 at, vec3 up)
 	return V;
 }
 
+
 mat4 myOrtho(float l, float r, float b, float t, float zNear, float zFar)
 {
 	// Implement your own Ortho function
@@ -96,7 +97,7 @@ mat4 myPerspective(float fovy, float aspectRatio, float zNear, float zFar)
 void myInit()
 {
 	cube.Init();
-	sphere.Init(50,50);
+	sphere.Init(20,20);
 
 	program = InitShader("vshader.glsl", "fshader.glsl");
 	prog_phong = InitShader("vphong.glsl", "fphong.glsl");
