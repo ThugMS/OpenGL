@@ -32,8 +32,8 @@ vec3 goalPos = vec3(0, 0, 0);
 int MazeSize;
 char maze[255][255] = { 0 };
 
-int dirX[4] = {0,0,-1,1};
-int dirY[4] = {-1,1,0,0};
+int dirX[8] = {0,0,-1,1, -1, 1, -1, 1};
+int dirY[8] = {-1,1,0,0, -1, -1, 1, 1};
 
 float cameraSpeed = 0.1;
 
@@ -78,16 +78,23 @@ inline vec3 getPositionFromIndex(int i, int j)
 	return leftTopPosition + i * xDir + j * zDir;
 }
 
-bool CheckCollider(vec3 pos) {
+bool CheckCollider(vec3 _pos) {
 	float unit = 1;
-	vec3 leftTopPosition = vec3(MazeSize / 2.0 , 0, MazeSize / 2.0);
+	float vol = 0.15;
 
-	pos += leftTopPosition;
+	for (int i = 0; i < 8; i++) {
 
-	if (maze[(int)(pos.x)][(int)(pos.z)] == '*') {
+		vec3 pos = _pos;
 
-		maze[(int)(pos.x)][(int)(pos.z)] = '|';
-		return true;
+		vec3 leftTopPosition = vec3(MazeSize / 2.0 + dirX[i] * vol, 0, MazeSize / 2.0 + dirY[i] * vol);
+
+		pos += leftTopPosition;
+
+
+		if (maze[(int)(pos.x)][(int)(pos.z)] == '*') {
+			maze[(int)(pos.x)][(int)(pos.z)] = '|';
+			return true;
+		}
 	}
 	return false;
 }
