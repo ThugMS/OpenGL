@@ -96,7 +96,7 @@ mat4 myPerspective(float fovy, float aspectRatio, float zNear, float zFar)
 void myInit()
 {
 	cube.Init();
-	sphere.Init(100,100);
+	sphere.Init(50,50);
 
 	program = InitShader("vshader.glsl", "fshader.glsl");
 	prog_phong = InitShader("vphong.glsl", "fphong.glsl");
@@ -105,17 +105,17 @@ void myInit()
 void DrawAxis()
 {
 	glUseProgram(program);
-	mat4 x_a= Translate(0.5,0,0)*Scale(1,0.05,0.05);
+	mat4 x_a= Translate(1.,0,0)*Scale(2,0.05,0.05);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat*x_a);
 	glUniform4f(uColor, 1, 0, 0, 1);
 	cube.Draw(program);
 
-	mat4 y_a= Translate(0,0.5,0)*Scale(0.05,1,0.05);
+	mat4 y_a= Translate(0,1.,0)*Scale(0.05,2,0.05);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat*y_a);
 	glUniform4f(uColor, 0, 1, 0, 1);
 	cube.Draw(program);
 
-	mat4 z_a= Translate(0,0,0.5)*Scale(0.05,0.05,1);
+	mat4 z_a= Translate(0,0,1.)*Scale(0.05,0.05,2);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat*z_a);
 	glUniform4f(uColor, 0, 0, 1, 1);
 	cube.Draw(program);
@@ -168,23 +168,25 @@ void display()
 	DrawAxis();
 	DrawGrid();
 
+
+
 	glUseProgram(prog_phong);
 	GLuint uProjMat = glGetUniformLocation(prog_phong, "uProjMat");
 	GLuint uModelMat = glGetUniformLocation(prog_phong, "uModelMat");
 
-	mat4 ModelMat = RotateY(g_Time);
+	mat4 ModelMat = RotateY(g_Time*90);
 	glUniformMatrix4fv(uProjMat, 1, GL_TRUE, ProjMat);
 	glUniformMatrix4fv(uModelMat, 1, GL_TRUE, ViewMat * ModelMat);
 	
-	// 1. Define Lights : position, color(Intensity)
-	vec4 lpos = vec4(2, 2, 0, 1); // in World Coord.
-	vec4 lcol = vec4(1, 1, 1, 1); // white
-
-	// 2. Material Properties
-	vec4 mAmb = (0.1, 0.1, 0.1, 1);
-	vec4 mDif = (0.6, 0.3, 0.3, 1);
-	vec4 mSpec = (0.3, 0.3, 0.3, 1);
-	float mShiness = 50.0f;
+	// 1. define lights : Position, Color(Intensity)
+	vec4 lpos = vec4(2, 2, 0, 1);	// in World Coord.
+	vec4 lcol = vec4(1, 1, 1, 1);	// white 
+	
+	// 2. material properties (phong coeff.)
+	vec4 mAmb = vec4(0.2,0.2,0.2,1);
+	vec4 mDif = vec4(0.6, 0.3, 0.3, 1);
+	vec4 mSpec = vec4(0.3, 0.3, 0.3, 1);
+	float shiness = 50.0;
 
 	GLuint uLPos = glGetUniformLocation(prog_phong, "uLPos");
 	GLuint uLCol = glGetUniformLocation(prog_phong, "uLCol");
@@ -192,13 +194,14 @@ void display()
 	GLuint uDif = glGetUniformLocation(prog_phong, "uDif");
 	GLuint uSpec = glGetUniformLocation(prog_phong, "uSpec");
 	GLuint uShiness = glGetUniformLocation(prog_phong, "uShiness");
-
+	   
 	glUniform4f(uLPos, lpos[0], lpos[1], lpos[2], lpos[3]);
 	glUniform4f(uLCol, lcol[0], lcol[1], lcol[2], lcol[3]);
 	glUniform4f(uAmb, mAmb[0], mAmb[1], mAmb[2], mAmb[3]);
 	glUniform4f(uDif, mDif[0], mDif[1], mDif[2], mDif[3]);
 	glUniform4f(uSpec, mSpec[0], mSpec[1], mSpec[2], mSpec[3]);
-	glUniform1f(uShiness, mShiness);
+	glUniform1f(uShiness, shiness);
+
 
 	sphere.Draw(prog_phong);
 	

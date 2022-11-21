@@ -7,7 +7,7 @@ struct MySphereVertex
 {
 	vec4 position;
 	vec4 color;
-	vec3 normal; //구는 사실 SHADER에서도 가능함
+	vec3 normal;
 };
 
 class MySphere
@@ -75,15 +75,15 @@ GLuint MySphere::Init(int la_slice, int lo_slice, vec4 color)
 			
 			if(i!=lo_slice-1)
 			{
-				Vertices[cur].position = a;	Vertices[cur].color = color; Vertices[cur].normal = a; cur++;
-				Vertices[cur].position = b;	Vertices[cur].color = color; Vertices[cur].normal = b; cur++;
-				Vertices[cur].position = c;	Vertices[cur].color = color; Vertices[cur].normal = c; cur++;
+				Vertices[cur].position = a;	Vertices[cur].color = color; Vertices[cur].normal = a;  cur++;
+				Vertices[cur].position = b;	Vertices[cur].color = color; Vertices[cur].normal = b; cur ++;
+				Vertices[cur].position = c;	Vertices[cur].color = color; Vertices[cur].normal = c; cur ++;
 			}
 			if(i!=0)
 			{
-				Vertices[cur].position = c;	Vertices[cur].color = color; Vertices[cur].normal = c; cur++;
-				Vertices[cur].position = d;	Vertices[cur].color = color; Vertices[cur].normal = d; cur++;
-				Vertices[cur].position = a;	Vertices[cur].color = color; Vertices[cur].normal = a; cur++;
+				Vertices[cur].position = c;	Vertices[cur].color = color; Vertices[cur].normal = c; cur ++;
+				Vertices[cur].position = d;	Vertices[cur].color = color; Vertices[cur].normal = d; cur ++;
+				Vertices[cur].position = a;	Vertices[cur].color = color; Vertices[cur].normal = a; cur ++;
 			}
 		}
 	}
@@ -111,7 +111,8 @@ void MySphere::SetPositionAndOtherAttributes(GLuint program)
 
 	GLuint vNormal = glGetAttribLocation(program, "vNormal");
 	glEnableVertexAttribArray(vNormal);
-	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, sizeof(MySphereVertex), BUFFER_OFFSET(sizeof(vec4) + sizeof(vec4)));
+	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_TRUE, sizeof(MySphereVertex), BUFFER_OFFSET(sizeof(vec4)+ sizeof(vec4)));
+
 
 }
 
