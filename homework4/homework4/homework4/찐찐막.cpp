@@ -1,13 +1,13 @@
 #include <vgl.h>
 #include <InitShader.h>
 #include "MyCube.h"
-#include "MySphere.h"
 
 #include <vec.h>
 #include <mat.h>
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <unordered_map>
 
 using namespace std;
 
@@ -16,10 +16,13 @@ struct MyModelVertex
 	vec4 position;
 	vec4 color;
 	vec3 normal;
+	float verNum;
+	vec3 phNormal;
 };
 
+unordered_map<int, vector<vec3>> phongNormal;
+
 MyCube cube;
-MySphere sphere;
 
 GLuint program;
 GLuint prog_phong;
@@ -58,6 +61,11 @@ float turnX = 0.0f;
 float turnY = 0.0f;
 bool isRotate = false;
 bool isY = true;
+float isFlat = 0;
+
+
+float shiness = 5.0;
+vec4 mSpec = vec4(0.3, 0.3, 0.3, 1);
 
 mat4 myLookAt(vec3 eye, vec3 at, vec3 up)
 {
@@ -90,21 +98,79 @@ mat4 myLookAt(vec3 eye, vec3 at, vec3 up)
 	return V;
 }
 
+vec3 transVec3(vec4 a) {
+	vec3 sub;
+
+	sub.x = a.x;
+	sub.y = a.y;
+	sub.z = a.z;
+
+	return sub;
+}
+
+vec3 computeNormal(vec4 p0, vec4 p1, vec4 p2)
+{
+	vec4 a4 = p1 - p0;         // p0 --> p1
+	vec4 b4 = p2 - p0;         // p0 --> p2
+	vec3 a = vec3(a4.x, a4.y, a4.z);
+	vec3 b = vec3(b4.x, b4.y, b4.z);
+
+	vec3 n = normalize((cross(a, b)));
+	return n;
+}
+
+void setVertexNormal()
+{
+	for (int i = 0; i < index; i++)
+	{	
+		vec3 normal = (0, 0, 0);
+
+
+		for (int j = 0; j < phongNormal[Vertices[i].verNum].size(); j++) {
+			normal += phongNormal[Vertices[i].verNum][j];
+		}
+
+		normal = normalize(normal);
+		Vertices[i].phNormal = normal;
+
+	}
+}
+
+
+
 void triple(int a, int b, int c) {
-	Vertices[index].position = vertex[a]; Vertices[index].color = vec4(0.5, 0.5, 0.5, 1); index++;
-	Vertices[index].position = vertex[b]; Vertices[index].color = vec4(0.5, 0.5, 0.5, 1); index++;
-	Vertices[index].position = vertex[c]; Vertices[index].color = vec4(0.5, 0.5, 0.5, 1); index++;
+
+	/*vec3 vA = transVec3(vertex[a]);
+	vec3 vB = transVec3(vertex[b]);
+	vec3 vC = transVec3(vertex[c]);
+
+	vec3 nor = (vA + vB + vC) / 3;*/
+
+	vec3 normal = computeNormal(vertex[a], vertex[b], vertex[c]);
+
+	/*Vertices[index].position = vertex[a]; Vertices[index].color = vec4(1.0, 1.0, 1.0, 1); Vertices[index].normal = computeNormal(vertex[a], vertex[b], vertex[c]); index++;
+	Vertices[index].position = vertex[b]; Vertices[index].color = vec4(1.0, 1.0, 1.0, 1); Vertices[index].normal = computeNormal(vertex[a], vertex[b], vertex[c]); index++;
+	Vertices[index].position = vertex[c]; Vertices[index].color = vec4(1.0, 1.0, 1.0, 1); Vertices[index].normal = computeNormal(vertex[a], vertex[b], vertex[c]); index++;*/
+
+	Vertices[index].verNum = a; Vertices[index].position = vertex[a]; Vertices[index].color = vec4(0.5, 0.5, 0.5, 1); Vertices[index].normal = normal; index++;
+	Vertices[index].verNum = b; Vertices[index].position = vertex[b]; Vertices[index].color = vec4(0.5, 0.5, 0.5, 1); Vertices[index].normal = normal; index++;
+	Vertices[index].verNum = c; Vertices[index].position = vertex[c]; Vertices[index].color = vec4(0.5, 0.5, 0.5, 1); Vertices[index].normal = normal; index++;
+
+	phongNormal[a].push_back(normal);
+	phongNormal[b].push_back(normal);
+	phongNormal[c].push_back(normal);
 }
 
 void setPosition() {
 	for (int i = 0; i < frag.size(); i++) {
 		triple(frag[i].x, frag[i].y, frag[i].z);
 	}
+	setVertexNormal();
 }
 
 void calXYZ() {
 	float s = vertex.size();
-	for (int i = 0; i < s; i++) {
+	for (int i = 1; i < s; i++) {
 		if (vertex[i].x > maxX) maxX = vertex[i].x;
 		if (vertex[i].y > maxY) maxY = vertex[i].y;
 		if (vertex[i].z > maxZ) maxZ = vertex[i].z;
@@ -114,9 +180,9 @@ void calXYZ() {
 		sumZ += vertex[i].z;
 	}
 
-	avgX = sumX / s;
-	avgY = sumY / s;
-	avgZ = sumZ / s;
+	avgX = sumX / (s-1);
+	avgY = sumY / (s-1);
+	avgZ = sumZ / (s-1);
 
 	float scaleX = (1.0 - maxX) * 10 + 1;
 
@@ -265,18 +331,57 @@ void myInit()
 	prog_phong = InitShader("vphong.glsl", "fphong.glsl");
 }
 
+
 void keyboard(unsigned char ch, int x, int y)
 {
 	if (ch == ' ')
 		isRotate = !isRotate;
+	else if (ch == '1') {
+		cout << "Using Vertex Normal" << endl;
 
+		isFlat = 0;
+
+	}
+	else if (ch == '2') {
+		cout << "Using Surface Normal" << endl;
+			
+		isFlat = 1;
+	}
+	else if (ch == '3') {
+		cout << "Increasing Specular Effect" << endl;
+		if (mSpec.x < 1.0) {
+			mSpec.x += 0.1;
+			mSpec.y += 0.1;
+			mSpec.z += 0.1;
+		}
+	}
+	else if (ch == '4') {
+		cout << "Decreasing Specular Effect" << endl;
+
+		if (mSpec.x > 0.2) {
+			mSpec.x -= 0.1;
+			mSpec.y -= 0.1;
+			mSpec.z -= 0.1;
+		}
+	}
+	else if (ch == '5') {
+		cout << "Increasing Shiness" << endl;
+
+		if(shiness < 50)
+			shiness++;
+	}
+	else if (ch == '6') {
+		cout << "Decreasing Shiness" << endl;
+
+		if (shiness > 1)
+			shiness--;
+	}
 }
 
 void processMouse(int button, int state, int x, int y) {
 
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
 		isY = true;
-		cout << "yes" << endl;
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		isY = false;
@@ -286,17 +391,17 @@ void processMouse(int button, int state, int x, int y) {
 void DrawAxis()
 {
 	glUseProgram(program);
-	mat4 x_a = Translate(1., 0, 0) * Scale(2, 0.01, 0.01);
+	mat4 x_a = Translate(1, 0, 0) * Scale(2, 0.01, 0.01);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * x_a);
 	glUniform4f(uColor, 1, 0, 0, 1);
 	cube.Draw(program);
 
-	mat4 y_a = Translate(0, 1., 0) * Scale(0.01, 2, 0.01);
+	mat4 y_a = Translate(0, 1., 0)  * Scale(0.01, 2, 0.01);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * y_a);
 	glUniform4f(uColor, 0, 1, 0, 1);
 	cube.Draw(program);
 
-	mat4 z_a = Translate(0, 0, 1.) * Scale(0.01, 0.01, 2);
+	mat4 z_a = Translate(0, 0, 1) * Scale(0.01, 0.01, 2);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * z_a);
 	glUniform4f(uColor, 0, 0, 1, 1);
 	cube.Draw(program);
@@ -367,6 +472,7 @@ void display()
 	ModelMat *= RotateY(turnY * 90) * RotateX(turnX * 90);
 
 	mat4 TransMat = Translate(-avgX, -avgY, -avgZ);
+
 	mat4 ScaleMat = Scale(scaleAll, scaleAll, scaleAll);
 
 ;	glUniformMatrix4fv(uProjMat, 1, GL_TRUE, ProjMat);
@@ -379,8 +485,8 @@ void display()
 	// 2. material properties (phong coeff.)
 	vec4 mAmb = vec4(0.2, 0.2, 0.2, 1);
 	vec4 mDif = vec4(0.6, 0.3, 0.3, 1);
-	vec4 mSpec = vec4(0.3, 0.3, 0.3, 1);
-	float shiness = 50.0;
+	
+	
 
 	GLuint uLPos = glGetUniformLocation(prog_phong, "uLPos");
 	GLuint uLCol = glGetUniformLocation(prog_phong, "uLCol");
@@ -388,6 +494,7 @@ void display()
 	GLuint uDif = glGetUniformLocation(prog_phong, "uDif");
 	GLuint uSpec = glGetUniformLocation(prog_phong, "uSpec");
 	GLuint uShiness = glGetUniformLocation(prog_phong, "uShiness");
+	GLuint uIsFlat = glGetUniformLocation(prog_phong, "uIsFlat");
 
 	glUniform4f(uLPos, lpos[0], lpos[1], lpos[2], lpos[3]);
 	glUniform4f(uLCol, lcol[0], lcol[1], lcol[2], lcol[3]);
@@ -395,9 +502,7 @@ void display()
 	glUniform4f(uDif, mDif[0], mDif[1], mDif[2], mDif[3]);
 	glUniform4f(uSpec, mSpec[0], mSpec[1], mSpec[2], mSpec[3]);
 	glUniform1f(uShiness, shiness);
-
-
-	
+	glUniform1f(uIsFlat, isFlat);
 
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -413,6 +518,10 @@ void display()
 	GLuint vNormal = glGetAttribLocation(prog_phong, "vNormal");
 	glEnableVertexAttribArray(vNormal);
 	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_TRUE, sizeof(MyModelVertex), BUFFER_OFFSET(sizeof(vec4) + sizeof(vec4)));
+
+	GLuint vPhNormal = glGetAttribLocation(prog_phong, "vPhNormal");
+	glEnableVertexAttribArray(vPhNormal);
+	glVertexAttribPointer(vPhNormal, 3, GL_FLOAT, GL_TRUE, sizeof(MyModelVertex), BUFFER_OFFSET(sizeof(vec4) + sizeof(vec4) + sizeof(vec3) + sizeof(GL_FLOAT)));
 
 	glDrawArrays(GL_TRIANGLES, 0, numVert);
 

@@ -3,6 +3,7 @@
 in  vec4 vPosition;
 in  vec4 vColor;
 in  vec3 vNormal;
+in	vec3 vPhNormal;
 
 //out vec4 color;
 
@@ -19,17 +20,28 @@ uniform vec4 uAmb;
 uniform vec4 uDif;
 uniform vec4 uSpec;
 uniform float uShiness;
-
+uniform float uIsFlat;
 
 void main()
-{
+{	
+	
+
 	gl_Position  = uProjMat * (uModelMat * vPosition);
 	gl_Position *= vec4(1,1,-1,1);	// z축 방향이 반대임
 
 	vec4 lPos = uLPos;
 	vec4 vPos = uModelMat * vPosition;
+	vec4 N;
 
-	vec4 N = uModelMat*vec4(vNormal,0);
+	if(uIsFlat == 0){
+		N = uModelMat*vec4(vPhNormal,0);
+	}
+	else if(uIsFlat == 1){
+		N = uModelMat*vec4(vNormal,0);
+	}
+	
+	//N = uModelMat*vec4(vNormal,0);
+
 	vec4 L = lPos - vPos;
 	N3 = normalize(N.xyz);
 	L3 = normalize(L.xyz);
