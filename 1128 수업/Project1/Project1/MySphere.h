@@ -74,10 +74,10 @@ GLuint MySphere::Init(int la_slice, int lo_slice, vec4 color)
 			vec3 c(r2*cos(db*(j+1)), y2, r2*sin(db*(j+1)));
 			vec3 d(r1*cos(db*(j+1)), y1, r1*sin(db*(j+1)));
 
-			vec2 ta(float(j) / lo_slice, 1 - float(i) / la_slice);
-			vec2 tb(float(j) / lo_slice, 1 - float(i + 1) / la_slice);
-			vec2 tc(float(j + 1) / lo_slice, 1 - float(i + 1) / la_slice);
-			vec2 td(float(j + 1) / lo_slice, 1 - float(i) / la_slice);
+			vec2 ta(1 - float(j) / lo_slice, 1 - float(i) / la_slice);
+			vec2 tb(1 - float(j) / lo_slice, 1 - float(i + 1) / la_slice);
+			vec2 tc(1 - float(j + 1) / lo_slice, 1 - float(i + 1) / la_slice);
+			vec2 td(1 - float(j + 1) / lo_slice, 1 - float(i) / la_slice);
 			if(i!=lo_slice-1)
 			{
 				Vertices[cur].position = a;	Vertices[cur].color = color; Vertices[cur].normal = a; Vertices[cur].texCoord = ta; cur++;

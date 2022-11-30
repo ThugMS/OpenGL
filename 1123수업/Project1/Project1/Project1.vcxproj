@@ -131,15 +131,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="fPhong.glsl" />
+    <None Include="vPhong.glsl" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MySphere.h" />
     <ClInclude Include="Targa.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fPhong.glsl" />
-    <None Include="vPhong.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
