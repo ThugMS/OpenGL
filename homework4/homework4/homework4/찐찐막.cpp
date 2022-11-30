@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <vgl.h>
 #include <InitShader.h>
 #include "MyCube.h"
@@ -7,6 +9,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <stdio.h>
 #include <unordered_map>
 
 using namespace std;
@@ -41,6 +44,9 @@ vector<vec4> vertex;
 vector<vec4> frag;
 
 MyModelVertex* Vertices;
+
+FILE* fp = NULL;
+char* buff;
 
 //vec4* pos;
 //vec4* colors;
@@ -122,7 +128,7 @@ vec3 computeNormal(vec4 p0, vec4 p1, vec4 p2)
 void setVertexNormal()
 {
 	for (int i = 0; i < index; i++)
-	{	
+	{
 		vec3 normal = (0, 0, 0);
 
 
@@ -180,9 +186,9 @@ void calXYZ() {
 		sumZ += vertex[i].z;
 	}
 
-	avgX = sumX / (s-1);
-	avgY = sumY / (s-1);
-	avgZ = sumZ / (s-1);
+	avgX = sumX / (s - 1);
+	avgY = sumY / (s - 1);
+	avgZ = sumZ / (s - 1);
 
 	float scaleX = (1.0 - maxX) * 10 + 1;
 
@@ -287,6 +293,48 @@ void readFile() {
 
 }
 
+void readingFile() {
+	while (1) {
+		cout << "Input FIle Path: ";
+		cin >> fileName;
+
+		fp = fopen(fileName, "r");
+
+		if (fp == NULL) {
+			cout << "File not Found!\n";
+			continue;
+		}
+		break;
+	}
+	fseek(fp, 0, SEEK_END);
+	long size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	buff = (char*)malloc(sizeof(char) * size);
+
+	unsigned int total = 0;
+	unsigned int cur = 0;
+
+	while ((cur = fread(&buff[total], sizeof(char), size - total, fp)) > 0) {
+		total += cur;
+	}
+
+	if (total != size) {
+		cout << "Not Read All File" << endl;
+	}
+
+	string str = "";
+
+	for (int i = 0; i < total; i++) {
+		if (buff[i] == '\n') {
+			saveArray(str);
+			str = "";
+			continue;
+		}
+		str += buff[i];
+	}
+}
+
 mat4 myPerspective(float fovy, float aspectRatio, float zNear, float zFar)
 {
 	mat4 P(1.0f);
@@ -344,7 +392,7 @@ void keyboard(unsigned char ch, int x, int y)
 	}
 	else if (ch == '2') {
 		cout << "Using Surface Normal" << endl;
-			
+
 		isFlat = 1;
 	}
 	else if (ch == '3') {
@@ -367,7 +415,7 @@ void keyboard(unsigned char ch, int x, int y)
 	else if (ch == '5') {
 		cout << "Increasing Shiness" << endl;
 
-		if(shiness < 50)
+		if (shiness < 50)
 			shiness++;
 	}
 	else if (ch == '6') {
@@ -391,17 +439,17 @@ void processMouse(int button, int state, int x, int y) {
 void DrawAxis()
 {
 	glUseProgram(program);
-	mat4 x_a = Translate(1, 0, 0) * Scale(2, 0.01, 0.01);
+	mat4 x_a = RotateY(turnY * 90) * RotateX(turnX * 90) * Translate(1, 0, 0)  * Scale(2, 0.01, 0.01);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * x_a);
 	glUniform4f(uColor, 1, 0, 0, 1);
 	cube.Draw(program);
 
-	mat4 y_a = Translate(0, 1., 0)  * Scale(0.01, 2, 0.01);
+	mat4 y_a = RotateY(turnY * 90) * RotateX(turnX * 90) * Translate(0, 1., 0) * Scale(0.01, 2, 0.01);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * y_a);
 	glUniform4f(uColor, 0, 1, 0, 1);
 	cube.Draw(program);
 
-	mat4 z_a = Translate(0, 0, 1) * Scale(0.01, 0.01, 2);
+	mat4 z_a =RotateY(turnY * 90) * RotateX(turnX * 90) * Translate(0, 0, 1) * Scale(0.01, 0.01, 2);
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, g_Mat * z_a);
 	glUniform4f(uColor, 0, 0, 1, 1);
 	cube.Draw(program);
@@ -462,7 +510,7 @@ void display()
 	mat4 ModelMat = 1;
 
 	if (isRotate) {
-		if(isY){
+		if (isY) {
 			turnY += 0.016;
 		}
 		else {
@@ -475,7 +523,7 @@ void display()
 
 	mat4 ScaleMat = Scale(scaleAll, scaleAll, scaleAll);
 
-;	glUniformMatrix4fv(uProjMat, 1, GL_TRUE, ProjMat);
+	;	glUniformMatrix4fv(uProjMat, 1, GL_TRUE, ProjMat);
 	glUniformMatrix4fv(uModelMat, 1, GL_TRUE, ViewMat * ScaleMat * ModelMat * TransMat);
 
 	// 1. define lights : Position, Color(Intensity)
@@ -485,8 +533,8 @@ void display()
 	// 2. material properties (phong coeff.)
 	vec4 mAmb = vec4(0.2, 0.2, 0.2, 1);
 	vec4 mDif = vec4(0.6, 0.3, 0.3, 1);
-	
-	
+
+
 
 	GLuint uLPos = glGetUniformLocation(prog_phong, "uLPos");
 	GLuint uLCol = glGetUniformLocation(prog_phong, "uLCol");
@@ -548,14 +596,15 @@ void reshape(int w, int h)
 
 
 int main(int argc, char** argv)
-{	
+{
 	vec3 tmp;
 	vertex.push_back(tmp);
 
 	readFile();
+	//readingFile();
 	numVert = frag.size() * 3;
 
-	Vertices = (MyModelVertex *)malloc(sizeof(MyModelVertex) * numVert);
+	Vertices = (MyModelVertex*)malloc(sizeof(MyModelVertex) * numVert);
 
 	//pos = (vec4*)malloc(sizeof(vec4) * numVert);
 	//colors = (vec4*)malloc(sizeof(vec4) * numVert);
@@ -589,7 +638,7 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(processMouse);
 	glutMainLoop();
-	
+
 
 	return 0;
 }
