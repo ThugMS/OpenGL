@@ -152,7 +152,7 @@ void display()
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
 		
-	mat4 ViewMat = myLookAt(vec3(2,2,2), vec3(0,0,0), vec3(0,1,0));
+	mat4 ViewMat = myLookAt(vec3(3,0,3), vec3(0,0,0), vec3(0,1,0));
 
 	float aspect = winWidth/(float)winHeight;
 	float h = 1;
