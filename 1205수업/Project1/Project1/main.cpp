@@ -22,6 +22,49 @@ float g_Time = 0;
 
 float g_aspect = 1;
 
+void myInitTexture() {
+	GLuint cubeTex;
+	glGenTextures(1, &cubeTex);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
+
+	STGA image;
+	image.loadTGA("church_posx.tga");
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, image.width, image.height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+	image.destroy();
+	
+
+	image.loadTGA("church_posy.tga");
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, image.width, image.height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+	image.destroy();
+	
+
+	image.loadTGA("church_posz.tga");
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, image.width, image.height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+	image.destroy();
+	
+
+	image.loadTGA("church_negx.tga");
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, image.width, image.height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+	image.destroy();
+	
+
+	image.loadTGA("church_negy.tga");
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, image.width, image.height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+	image.destroy();
+	
+
+	image.loadTGA("church_negz.tga");
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, image.width, image.height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+	image.destroy();
+	
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+
+}
+
 mat4 myLookAt(vec3 eye, vec3 at, vec3 up)
 {
 	mat4 V = mat4(1.0f);
@@ -84,7 +127,7 @@ void myInit()
 
 	cube_prog = InitShader("vcube.glsl", "fcube.glsl");
 
-	
+	myInitTexture();
 }
 
 void DrawAxis()
@@ -128,7 +171,9 @@ void display()
 
 	glUseProgram(cube_prog);
 	GLuint uMat = glGetUniformLocation(cube_prog, "uMat");
+	GLuint uTexCube = glGetUniformLocation(cube_prog, "uTexCube");
 	glUniformMatrix4fv(uMat, 1, GL_TRUE, ProjMat*ViewMat*Scale(1,1,1));
+	glUniform1i(uTexCube, 0);
 
 
 	cube.Draw(cube_prog);
