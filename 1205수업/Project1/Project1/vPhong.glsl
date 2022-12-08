@@ -7,6 +7,10 @@ in  vec3 vNormal;
 out vec3 N3; 
 out vec3 L3; 
 out vec3 V3;  
+out vec3 wP;
+out vec3 wV;
+out vec3 wN;
+
 	
 
 uniform mat4 uModelMat; 
@@ -17,6 +21,8 @@ uniform vec4 uAmb;
 uniform vec4 uDif; 
 uniform vec4 uSpc; 
 uniform float uShininess; 
+uniform samplerCube uTexCube;
+uniform vec4 uEPos;
 
 void main()
 {
@@ -31,5 +37,7 @@ void main()
 	L3 = normalize(L.xyz); 
 	V3 = normalize(V.xyz); 
 
-
+	wP = (uModelMat*vPosition).xyz;
+	wV = uEPos.xyz;
+	wN = normalize((uModelMat*vec4(vNormal,0)).xyz);
 }
