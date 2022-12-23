@@ -52,7 +52,9 @@ void main()
 	
 	//float fr = 1.0f;
 	
-	float fr = 0 + 0.5* pow(max((1 - dot(V, N)), 0),1);
-	fColor = (1-fr)*fColor + fr*rColor;
+	fColor = rColor;
+
+	//float fr = 0 + 0.5* pow(max((1 - dot(V, N)), 0),1);
+	//fColor = (1-fr)*fColor + fr*rColor;
 
 }
